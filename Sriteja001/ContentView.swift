@@ -33,7 +33,7 @@ struct ContentView: View {
                 
                 Section {
                     HStack {
-                        Text("Prediction:").font(.largeTitle)
+                        Text("Predict:").font(.largeTitle)
                         Spacer()
                         Text(prediction)
                     }
