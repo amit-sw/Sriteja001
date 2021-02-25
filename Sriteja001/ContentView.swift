@@ -25,6 +25,8 @@ struct ContentView: View {
     @State var rfHyp = false
     @State var rfChol = false
     
+    @State var predictionGood = true
+    
     let uploadURL = "https://6n11kxb1s9.execute-api.us-east-1.amazonaws.com/Predict/096ba20a-c7f7-4941-b4c5-1b1881a97e04"
     
     var body: some View {
@@ -35,7 +37,7 @@ struct ContentView: View {
                     HStack {
                         Text("Prediction:").font(.largeTitle)
                         Spacer()
-                        Text(prediction)
+                        Text(prediction).foregroundColor(predictionGood ? .green: .red)
                     }
                 }
                 
@@ -67,36 +69,35 @@ struct ContentView: View {
                     HStack {
                         Text("Health:").fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/).foregroundColor(Color.black)
                         Spacer()
-                        Toggle(isOn: $rfHlth) {
-                            Text("Good")
-                                .multilineTextAlignment(.trailing)
-                        }.onChange(of: rfHlth, perform: { value in
+                        Text("Good")
+                        Toggle("Health:",isOn: $rfHlth).labelsHidden()
+                            .onChange(of: rfHlth, perform: { value in
                             predictAI()
                         })
-                        Text("Bad")
+                        Text("Bad").foregroundColor(Color.red)
                     }.foregroundColor(Color.green)
                     
                     HStack {
                         Text("Hypertension:").fontWeight(.bold).foregroundColor(Color.black)
                         Spacer()
-                        Toggle(isOn: $rfHyp) {
-                            Text("Good")
-                                .multilineTextAlignment(.trailing)
-                        }.onChange(of: rfHyp, perform: { value in
+                        Text("Good")
+                        Toggle("Hypertension",isOn: $rfHyp).labelsHidden()
+                            .onChange(of: rfHyp, perform: { value in
                             predictAI()
                         })
-                        Text("Bad")
+                        Text("Bad").foregroundColor(Color.red)
                     }.foregroundColor(Color.green)
                     
                     HStack {
-                        Text("Cholesterol:").foregroundColor(Color.black)
+                        Text("Cholesterol:").fontWeight(.bold).foregroundColor(Color.black)
+                        Spacer()
                         Text("Good")
                             .multilineTextAlignment(.trailing)
-                        Toggle(isOn: $rfChol) {
-                        }.onChange(of: rfChol, perform: { value in
+                        Toggle("Cholesterol",isOn: $rfChol).labelsHidden()
+                            .onChange(of: rfChol, perform: { value in
                             predictAI()
                         })
-                        Text("Bad")
+                        Text("Bad").foregroundColor(Color.red)
                     }.foregroundColor(Color.green)
                     
                     
@@ -179,7 +180,8 @@ struct ContentView: View {
                 json = JSON.init(parseJSON: body)
                 debugPrint("Second JSON is ",json)
                 let predictedLabel = json["predicted_label"].stringValue
-                let s=(predictedLabel=="3") ?"High risk":"Low risk"
+                predictionGood = predictedLabel=="1"
+                let s = predictionGood ?"Low risk":"High risk"
                 //debugPrint("Predicted label equals",predictedLabel)
                 //let s = (Float(predictedLabel) ?? -0.01)*100
                 //let s = (Float(predictedLabel) ?? -0.01)*1
